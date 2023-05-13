@@ -1,5 +1,7 @@
 import { fetchAllPlayers } from './ajaxHelpers';
-
+import { fetchSinglePlayer } from './ajaxHelpers';
+import { addNewPlayer } from './ajaxHelpers';
+import { removePlayer } from './ajaxHelpers'; 
 const playerContainer = document.getElementById('all-players-container');
 const newPlayerFormContainer = document.getElementById('new-player-form');
 
@@ -22,7 +24,9 @@ export const renderAllPlayers = (playerList) => {
         </div>
         <img src="${pup.imageUrl}" alt="photo of ${pup.name} the puppy">
         <button class="detail-button" data-id=${pup.id}>See details</button>
+        <button class="delete-button">Delete</button> 
       </div>
+
     `;
     playerContainerHTML += pupHTML;
   }
@@ -37,9 +41,15 @@ export const renderAllPlayers = (playerList) => {
   for (let i = 0; i < detailButtons.length; i++) {
     const button = detailButtons[i];
     button.addEventListener('click', async () => {
-      /*
-        YOUR CODE HERE
-      */
+      console.log('click');
+      console.log('button', button.dataset.id);
+      let data = `
+        <p class="pupData">${button.dataset.id}</p>
+      `
+      console.log(data)
+      let playerObj = await fetchSinglePlayer(button.dataset.id);
+      console.log('puppy', playerObj)
+      renderSinglePlayer(playerObj.player); 
     });
   }
 };
@@ -66,6 +76,14 @@ export const renderSinglePlayer = (playerObj) => {
   `;
 
   playerContainer.innerHTML = pupHTML;
+  let backToAll = document.getElementById('see-all');
+  console.log('buttonInfo', backToAll);
+
+  backToAll.addEventListener('click', async () => {
+    console.log('click');
+    let players = await fetchAllPlayers();
+    renderAllPlayers(players);
+  });
 };
 
 export const renderNewPlayerForm = () => {
@@ -82,8 +100,29 @@ export const renderNewPlayerForm = () => {
 
   let form = document.querySelector('#new-player-form > form');
   form.addEventListener('submit', async (event) => {
-    /*
-      YOUR CODE HERE
-    */
+    event.preventDefault();
+
+    let playerData = {
+      name: form.elements.name.value,
+      breed: form.elements.breed.value
+    }
+
+    console.log('info', playerData);
+    let data = await addNewPlayer(playerData);
+    console.log('data', data);
+    renderAllPlayers();
+    fetchAllPlayers();
   });
 };
+
+export const renderPlayerDeleted = () => {
+  let deleteButtons = [...document.getElementsByClassName('delete-button')];
+    for (let i = 0; i < deleteButtons.length; i++) {
+    const button = deleteButtons[i];
+     button.addEventListener('click', async () => {
+      await removePlayer(button.dataset.id);
+      const players = await fetchAllPlayers();
+      renderAllPlayers(players);
+   });
+  } 
+} 
