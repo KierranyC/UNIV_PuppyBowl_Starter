@@ -24,7 +24,7 @@ export const renderAllPlayers = (playerList) => {
         </div>
         <img src="${pup.imageUrl}" alt="photo of ${pup.name} the puppy">
         <button class="detail-button" data-id=${pup.id}>See details</button>
-        <button class="delete-button">Delete</button> 
+        <button class="delete-button" data-id=${pup.id}>DELETE</button> 
       </div>
 
     `;
@@ -52,8 +52,17 @@ export const renderAllPlayers = (playerList) => {
       renderSinglePlayer(playerObj.player); 
     });
   }
+  let deleteButtons = [...document.getElementsByClassName('delete-button')];
+    for (let i = 0; i < deleteButtons.length; i++) {
+     const button = deleteButtons[i];
+      button.addEventListener('click', async () => {
+      await removePlayer(button.dataset.id);
+      const players = await fetchAllPlayers();
+      renderAllPlayers(players);
+   });
+  } 
 };
-
+  
 export const renderSinglePlayer = (playerObj) => {
   if (!playerObj || !playerObj.id) {
     playerContainer.innerHTML = "<h3>Couldn't find data for this player!</h3>";
@@ -115,14 +124,6 @@ export const renderNewPlayerForm = () => {
   });
 };
 
-export const renderPlayerDeleted = () => {
-  let deleteButtons = [...document.getElementsByClassName('delete-button')];
-    for (let i = 0; i < deleteButtons.length; i++) {
-    const button = deleteButtons[i];
-     button.addEventListener('click', async () => {
-      await removePlayer(button.dataset.id);
-      const players = await fetchAllPlayers();
-      renderAllPlayers(players);
-   });
-  } 
-} 
+/*export const renderPlayerDeleted = () => {
+  
+} */

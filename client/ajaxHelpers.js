@@ -63,7 +63,7 @@ export const removePlayer = async (playerId) => {
         return;
        } catch (err) {
         console.error(
-          `Couldn't remove player #${playerId} !`,
+          `Couldn't remove player #${playerId}`,
           err
         );
        }
